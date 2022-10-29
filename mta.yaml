@@ -1,0 +1,69 @@
+---
+_schema-version: '3.1'
+ID: demo02
+version: 1.0.0-SNAPSHOT
+description: "demo02 application"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npx -p @sap/cds-dk@^6 cds build --production
+
+modules:
+  - name: demo02-srv
+    type: java
+    path: srv
+    requires:
+      # Resources extracted from CAP configuration
+       - name: demo02-db          
+       - name: uaa_fioridemo51
+
+    parameters:
+      buildpack: java_buildpack
+    properties:
+      SPRING_PROFILES_ACTIVE: cloud
+    build-parameters:
+      builder: custom
+      commands:
+        - mvn clean package -DskipTests=true
+      build-result: target/*-exec.jar
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+
+  - name: demo02-db-deployer
+    type: hdb
+    path: db  
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+    # 'hana' and 'xsuaa' resources extracted from CAP configuration
+      - name: demo02-db
+
+resources:
+
+
+ # services extracted from CAP configuration
+ # 'service-plan' can be configured via 'cds.requires.<name>.vcap.plan'
+ 
+# ------------------------------------------------------------
+ - name: demo02-db
+# ------------------------------------------------------------
+   type: com.sap.xs.hdi-container
+   parameters:
+     service: hana  # or 'hanatrial' on trial landscapes
+     service-plan: hdi-shared
+   properties:
+     hdi-service-name: ${service-name}
+
+
+ - name: uaa_fioridemo51
+   type: org.cloudfoundry.managed-service
+   parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: fioridemo51-xsuaa-service
+    service-plan: application
