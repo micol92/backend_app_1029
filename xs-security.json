@@ -1,15 +1,11 @@
 {
-    "xsappname": "fioridemo51",
+    "xsappname": "fioridemo50",
     "tenant-mode": "dedicated",
     "description": "Security profile of called application",
     "scopes": [
       {
         "name": "uaa.user",
         "description": "UAA"
-      },
-      {      
-      "name": "$XSAPPNAME.backendscope",
-      "granted-apps" : ["$XSAPPNAME(application, fioridemo50)"]
       }
     ],
     "role-templates": [
@@ -17,8 +13,7 @@
         "name": "Token_Exchange",
         "description": "UAA",
         "scope-references": [
-          "uaa.user",
-          "$XSAPPNAME.backendscope"
+          "uaa.user"
         ]
       }
     ]

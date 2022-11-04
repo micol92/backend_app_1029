@@ -18,7 +18,6 @@ modules:
     requires:
       # Resources extracted from CAP configuration
        - name: demo02-db          
-       - name: uaa_fioridemo51
 
     parameters:
       buildpack: java_buildpack
@@ -60,10 +59,10 @@ resources:
      hdi-service-name: ${service-name}
 
 
- - name: uaa_fioridemo51
-   type: org.cloudfoundry.managed-service
-   parameters:
-    path: ./xs-security.json
-    service: xsuaa
-    service-name: fioridemo51-xsuaa-service
-    service-plan: application
+# - name: uaa_fioridemo50
+#   type: org.cloudfoundry.managed-service
+#   parameters:
+#    path: ./xs-security.json
+#    service: xsuaa
+#    service-name: fioridemo50-xsuaa-service
+#    service-plan: application
