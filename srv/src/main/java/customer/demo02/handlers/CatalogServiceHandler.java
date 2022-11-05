@@ -66,13 +66,15 @@ import static cds.gen.catalogservice.CatalogService_.BOOKS;
 @Component
 @ServiceName(CatalogService_.CDS_NAME)
 public class CatalogServiceHandler implements EventHandler {
-	//private final PersistenceService db;
+	
+    @Autowired
+    private  PersistenceService db;
 
    // CatalogServiceHandler() {}
 
 //    @On(entity = Books_.CDS_NAME)
     @On(event = SaveBookContext.CDS_NAME)
-	public void onSaveBook() {
+	public void onSaveBook(SaveBookContext context) {
 
         System.out.println("zzzzzzzzzzzzzzzzzzzz1");
         Map<String, Object> book = new HashMap<>();
@@ -81,8 +83,10 @@ public class CatalogServiceHandler implements EventHandler {
         book.put("stock", 100);
         System.out.println("zzzzzzzzzzzzzzzzzzzz2");
 
-        CqnInsert insert = Insert.into("my.Books").entry(book);
+        CqnInsert insert = Insert.into("CatalogService.Books").entry(book);
+        db.run(insert);
         System.out.println("zzzzzzzzzzzzzzzzzzzz3");
+        context.setCompleted();
 
 	}  
 

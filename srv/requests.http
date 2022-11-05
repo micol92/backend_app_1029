@@ -1,0 +1,18 @@
+####
+POST http://localhost:8080/odata/v4/CatalogService/SaveBook
+Content-Type: application/json
+
+{
+}
+
+### Get Books
+GET http://localhost:8080/odata/v4/CatalogService/Books
+
+
+### Post Books via Action
+POST http://localhost:8080/odata/v4/CatalogService/SaveBook
+Content-Type: application/application/json
+
+{
+}
+
