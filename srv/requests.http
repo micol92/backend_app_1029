@@ -11,8 +11,42 @@ GET http://localhost:8080/odata/v4/CatalogService/Books
 
 ### Post Books via Action
 POST http://localhost:8080/odata/v4/CatalogService/SaveBook
-Content-Type: application/application/json
+Content-Type: application/json
 
 {
 }
 
+### Post Books via Action
+POST http://localhost:8080/odata/v4/CatalogService/SaveBookTypesEntityProc
+Content-Type: application/json
+
+{
+    "Books" :[ {
+        "ID" : 1002,
+        "title" : "test0001",
+        "stock" : 12 
+    }]
+}
+
+
+### Post Books via Action
+POST http://localhost:8080/odata/v4/CatalogService/SaveBookTypesEntityProc
+Content-Type: application/json
+
+{
+    "Books" :[ {
+        "ID" : 1002,
+        "title" : "test0001",
+        "stock" : 12 
+    }]
+}
+
+### Post Books via Action
+POST http://localhost:8080/odata/v4/CatalogService/SaveBookSingleTypesEntity
+Content-Type: application/json
+
+{
+        "ID" : 1002,
+        "title" : "test0001",
+        "stock" : 12 
+}

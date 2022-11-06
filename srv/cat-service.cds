@@ -7,12 +7,14 @@ service CatalogService @(requires: 'any') {
 
 
     type BookTypes : {
-        ID : Integer;
+        ID   : Integer;
         title  : String;
         stock  : Integer;
     }
 
-    action SaveBookTypesEntityProc (inputData : BookTypes) returns Integer;
+    action SaveBookTypesEntityProc (Books : array of BookTypes) returns array of BookTypes;
+
+    action SaveBookSingleTypesEntity (ID : Integer, title : String, stock : Integer) returns BookTypes;
 
 
 }

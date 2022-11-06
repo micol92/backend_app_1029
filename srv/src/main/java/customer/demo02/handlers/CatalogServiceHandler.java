@@ -22,6 +22,8 @@ import com.sap.cds.services.handler.annotations.ServiceName;
 
 import cds.gen.catalogservice.CatalogService_;
 import cds.gen.catalogservice.Books;
+import cds.gen.catalogservice.SaveBookTypesEntityProcContext;
+import cds.gen.catalogservice.BookTypes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -90,24 +92,62 @@ public class CatalogServiceHandler implements EventHandler {
 
 	}  
 
-	@After(event = CqnService.EVENT_READ)
+	@After(event = CdsService.EVENT_READ)
 	public void discountBooks(Stream<Books> books) {
-		books.filter(b -> b.getTitle() != null).forEach(b -> {
-			//loadStockIfNotSet(b);
-			//discountBooksWithMoreThan111Stock(b);
-		});
+		books.filter(b -> b.getTitle() != null && b.getStock() != null)
+		.filter(b -> b.getStock() > 200)
+		.forEach(b -> b.setTitle(b.getTitle() + " (discounted)"));
 	}
-    
-/*
+
+
+    //action SaveBookSingleTypesEntity (Books : BookTypes) returns BookTypes;
+
+    @On(event = SaveBookSingleTypesEntityContext.CDS_NAME)
+    public void onSaveBookTypesEntityProc(SaveBookSingleTypesEntityContext context) {
+
+        BookTypes booktypes = BookTypes.create();
+        Books books = Books.create();
+        books.setId(context.getId());
+        books.setTitle(context.getTitle());
+        books.setStock(context.getStock());
+
+        booktypes.setId(context.getId());
+        booktypes.setTitle(context.getTitle());
+        booktypes.setStock(context.getStock());
+        
+        Result res = db.run(Insert.into(BOOKS).entry(books));       
+        cds.gen.catalogservice.Books inserted = res.single(cds.gen.catalogservice.Books.class);
+
+        context.setResult(booktypes);
+
+    }    
+
     @On(event = SaveBookTypesEntityProcContext.CDS_NAME)
     public void onSaveBookTypesEntityProc(SaveBookTypesEntityProcContext context) {
 
-        
-        Integer pId = 1 ; //context.Id();
-		String pTitle = "tttt"; //context.Title();
-		Integer pStock = 1; //context.Stock();
 
-        Collection<BookTypes> v_result = new ArrayList<>();
+//        Integer pId = 1001 ; //context.Id();
+//		String pTitle = "tttt"; //context.Title();
+//		Integer pStock = 1; //context.Stock();
+
+        Collection<BookTypes> bookTypes = context.getBooks();
+
+        for (BookTypes bookType : bookTypes) {
+            //bookType.getId();
+            //bookType.getTitle();
+            //bookType.getStock();
+            Result res = db.run(Insert.into(BOOKS).entry(bookType));       
+            cds.gen.catalogservice.Books inserted = res.single(cds.gen.catalogservice.Books.class);
+     
+        }
+        context.setResult(bookTypes);
+/*
+        // Integer pId = context.
+		String pTitle = context.getInputData().getTitle();
+		Integer pStock = context.getInputData().getStock();
+System.out.println("zzzzzzzz01");
+        //Collection<BookTypes> v_result = new ArrayList<>();
+        BookTypes v_result =  BookTypes.create();
 
 		//String bookId = (String) analyzer.analyze(context.getCqn()).targetKeys().get(Books.ID);
 
@@ -115,17 +155,24 @@ public class CatalogServiceHandler implements EventHandler {
 		books.setId(pId);
         books.setTitle(pTitle);
         books.setStock(pStock); 
-        
-		Result res = db.run(Insert.into(CatalogService_.BOOKS).entry(books));
-		cds.gen.catalogservice.Books inserted = res.single(cds.gen.catalogservice.Books.class);
+        System.out.println("zzzzzzzz02");  
 
-        context.setResult(1);
+        v_result.setId(pId);
+        v_result.setTitle(pTitle);
+        v_result.setStock(pStock);
+        System.out.println("zzzzzzzz03");
+		Result res = db.run(Insert.into(BOOKS).entry(books));
+		cds.gen.catalogservice.Books inserted = res.single(cds.gen.catalogservice.Books.class);
+        System.out.println("zzzzzzzz04");
+        context.setResult(v_result);
+
+
 		//messages.success(MessageKeys.REVIEW_ADDED);
 
 		//context.setResult(Struct.access(inserted).as(Books.class));
-
+*/
 
         }    
-*/
+
 
 }
