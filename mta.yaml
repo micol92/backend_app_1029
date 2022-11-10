@@ -17,7 +17,9 @@ modules:
     path: srv
     requires:
       # Resources extracted from CAP configuration
-       - name: demo02-db          
+       - name: demo02-db
+       - name: demo02-conn
+       - name: demo02-dest         
 
     parameters:
       buildpack: java_buildpack
@@ -57,6 +59,27 @@ resources:
      service-plan: hdi-shared
    properties:
      hdi-service-name: ${service-name}
+
+# ------------------------------------------------------------
+ - name: demo02-conn
+# ------------------------------------------------------------
+   type: org.cloudfoundry.managed-service
+   parameters:
+    service: connectivity
+    service-name: demo02-conn-srv
+    service-plan: lite
+
+# ------------------------------------------------------------
+ - name: demo02-dest
+# ------------------------------------------------------------
+   type: org.cloudfoundry.managed-service
+   parameters:
+    service: destination
+    service-name: demo02-dest-srv
+    service-plan: lite
+
+
+
 
 
 # - name: uaa_fioridemo50

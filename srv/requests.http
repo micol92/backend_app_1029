@@ -8,6 +8,28 @@ Content-Type: application/json
 ### Get Books
 GET http://localhost:8080/odata/v4/CatalogService/Books
 
+### Get Books
+GET http://localhost:8080/odata/v4/CatalogService/POrders
+
+### Get Books
+GET http://localhost:8080/odata/v4/cloud.sdk.capng/CapBusinessPartner
+
+### Post Books via Action
+POST http://localhost:8080/odata/v4/cloud.sdk.capng/CapBusinessPartner
+Content-Type: application/json
+
+{
+
+}
+
+### Post Books via Action
+POST http://localhost:8080/odata/v4/CatalogService/POrders
+Content-Type: application/json
+
+{
+
+}
+
 
 ### Post Books via Action
 POST http://localhost:8080/odata/v4/CatalogService/SaveBook

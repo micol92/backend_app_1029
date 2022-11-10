@@ -5,3 +5,10 @@ entity Books {
   title  : String;
   stock  : Integer;
 }
+
+entity PurchaseOrders {
+  key poid : String;
+  potype  : String;
+  pogroup  : String;
+  posupplier : String;
+}
