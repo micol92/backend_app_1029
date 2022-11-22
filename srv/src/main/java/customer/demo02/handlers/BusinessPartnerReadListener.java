@@ -77,23 +77,12 @@ public class BusinessPartnerReadListener implements EventHandler {
     public void onCreate(CdsCreateEventContext context) throws ODataException {
         final BusinessPartnerService service = new DefaultBusinessPartnerService();
         HttpDestination httpDestination = DestinationAccessor.getDestination("S4H").asHttp();
-        //Map<String, Object> m = context.getCqn().entries().get(0);
-        //BusinessPartner bp = BusinessPartner.builder().firstName(m.get("firstName").toString()).lastName(m.get("surname").toString()).businessPartner(m.get("ID").toString()).build();
-       /*
+        Map<String, Object> m = context.getCqn().entries().get(0);
+
         BusinessPartner bp = BusinessPartner.builder().
             firstName(m.get("firstName").toString()).
             lastName(m.get("surname").toString()).
             businessPartner(m.get("ID").toString()).
-            businessPartnerCategory("2".toString()).
-            businessPartnerName("ecbank".toString()).
-            groupBusinessPartnerName1("sap-p1".toString()).
-            organizationBPName1("sap-org1".toString()).
-            build();
-        */
-        BusinessPartner bp = BusinessPartner.builder().
-            firstName("test".toString()).
-            lastName("han".toString()).
-            businessPartner("9900003C".toString()).
             businessPartnerCategory("2".toString()).
             businessPartnerName("ecbank".toString()).
             groupBusinessPartnerName1("sap-p1".toString()).

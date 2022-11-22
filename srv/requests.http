@@ -8,8 +8,6 @@ Content-Type: application/json
 ### Get Books
 GET http://localhost:8080/odata/v4/CatalogService/Books
 
-### Get Books
-GET http://localhost:8080/odata/v4/CatalogService/POrders
 
 ### Get Books
 GET http://localhost:8080/odata/v4/cloud.sdk.capng/CapBusinessPartner
@@ -19,14 +17,24 @@ POST http://localhost:8080/odata/v4/cloud.sdk.capng/CapBusinessPartner
 Content-Type: application/json
 
 {
-
+    "ID" : "9999900A",
+    "firstName" : "HAN",
+    "surname" : "WOO",
+    "sourceDestination" : "S4H"
 }
 
-### Post Books via Action
+### Get POrders
+GET http://localhost:8080/odata/v4/CatalogService/POrders
+
+### Post POrders via Action
 POST http://localhost:8080/odata/v4/CatalogService/POrders
 Content-Type: application/json
 
 {
+    "poid" : "12356",
+    "potype" : "NB",
+    "pogroup" : "001",
+    "posupplier" : "17300001"
 
 }
 

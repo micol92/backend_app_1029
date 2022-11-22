@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Optional;
+import java.math.BigDecimal;
 //import java.time.LocalDate;
 import java.time.LocalDateTime;
 //import java.time.LocalTime;
@@ -80,10 +82,19 @@ import org.slf4j.LoggerFactory;
 import com.sap.cloud.sdk.cloudplatform.connectivity.DestinationAccessor;
 import com.sap.cloud.sdk.cloudplatform.connectivity.HttpDestination;
 import com.sap.cloud.sdk.datamodel.odata.client.exception.ODataException;
+import com.sap.cloud.sdk.datamodel.odata.client.exception.ODataServiceErrorException;
+import com.sap.cloud.sdk.datamodel.odata.client.exception.ODataServiceError;
+import com.sap.cloud.sdk.datamodel.odata.client.exception.ODataDeserializationException;
+import com.sap.cloud.sdk.datamodel.odata.client.exception.ODataResponseException;
+
 import com.sap.cloud.sdk.s4hana.datamodel.odata.services.DefaultPurchaseOrderService;
 import com.sap.cloud.sdk.s4hana.datamodel.odata.services.PurchaseOrderService;
+//import com.sap.cloud.sdk.s4hana.datamodel.odata.services.PurchaseOrderItem;
 import com.sap.cloud.sdk.s4hana.datamodel.odata.namespaces.purchaseorder.PurchaseOrder;
+import com.sap.cloud.sdk.s4hana.datamodel.odata.namespaces.purchaseorder.PurchaseOrderCreateFluentHelper;
 import com.sap.cloud.sdk.s4hana.datamodel.odata.namespaces.purchaseorder.PurchaseOrderFluentHelper;
+import com.sap.cloud.sdk.s4hana.datamodel.odata.namespaces.purchaseorder.PurchaseOrderItem;
+
 //import com.sap.cloud.sdk.datamodel.odatav4.core.SimpleProperty.DateTime;
 
 @Component
@@ -95,7 +106,7 @@ public class CatalogServiceHandler implements EventHandler {
     private static final long serialVersionUID = 1L;
     //private HttpDestination httpDestination = DestinationAccessor.getDestination("S4H").asHttp();        
 
-   // private static final Logger logger = LoggerFactory.getLogger(HelloPOLists.class);	
+    private static final Logger logger = LoggerFactory.getLogger(CatalogServiceHandler.class);	
     @Autowired
     private  PersistenceService db;
 
@@ -147,8 +158,18 @@ public class CatalogServiceHandler implements EventHandler {
         PurchaseOrderService service = new DefaultPurchaseOrderService();
         //LocalDateTime ldtime = new LocalDateTime().now();
         LocalDateTime currentDateTime = LocalDateTime.now();
+        BigDecimal qty = new BigDecimal(1);
+       // qty = 1;
 
-        //Map<String, Object> m = context.getCqn().entries().get(0);
+        Map<String, Object> m = context.getCqn().entries().get(0);
+        PurchaseOrderItem poitem = PurchaseOrderItem.builder().
+                                    purchaseOrderItem("10".toString()).
+                                    material("TG11".toString()).
+                                    plant("1710".toString()).
+                                    incotermsLocation1("VENDER".toString()).
+                                    orderQuantity(qty).build();
+        
+
         /*
         PurchaseOrder po = PurchaseOrder.builder().purchasingGroup("002".toString()).
                                 companyCode("1710").
@@ -158,18 +179,56 @@ public class CatalogServiceHandler implements EventHandler {
                                 purchaseOrderDate(currentDateTime).
                                 purchaseOrder("11111190".toString()).
                                 build();
-        */                        
-        //BusinessPartner bp = BusinessPartner.builder().firstName(m.get("firstName").toString()).lastName(m.get("surname").toString()).businessPartner(m.get("ID").toString()).build();
+        */      
         PurchaseOrder po = PurchaseOrder.builder().purchasingGroup("001".toString()).
-                                companyCode("1710".toString()).
-                                purchaseOrderType("NB".toString()).
-                                supplier("17300001".toString()).
-                                purchaseOrderDate(currentDateTime).
-                                purchasingOrganization("1710".toString()).
-                                build();
-        service.createPurchaseOrder(po).executeRequest(httpDestination);
-    }
+        companyCode("1710".toString()).
+        purchaseOrderType("NB".toString()).
+        supplier("17300001".toString()).
+        purchasingOrganization("1710".toString()).
+        purchaseOrderItem(poitem).
+        build();
 
+        //BusinessPartner bp = BusinessPartner.builder().firstName(m.get("firstName").toString()).lastName(m.get("surname").toString()).businessPartner(m.get("ID").toString()).build();
+        try {
+            service.createPurchaseOrder(po).executeRequest(httpDestination);
+        }
+        catch( ODataServiceErrorException e) {
+            ODataServiceError odataError = e.getOdataError();
+            logger.debug("The OData service responded with an error: {}", odataError);
+            System.out.println("The OData service responded with an error: {}"+ e.getOdataError());
+
+        } catch( ODataDeserializationException e ) {
+            // handle failures in deserialization
+            System.out.println("The OData Deserialization responded with an error: {}"+ e.getMessage());
+
+        } catch( ODataResponseException e ) {
+            // handle all other errors originating from handling the HTTP response
+            int httpCode = e.getHttpCode();
+            logger.debug("The OData Response1 responded with an error: {}", e.getHttpHeaders());
+            logger.debug("The OData Response2 responded with an error: {}", e.getHttpBody());
+            System.out.println("The OData Response1 responded with an error: {}"+ e.getHttpHeaders());
+            System.out.println("The OData Response2 responded with an error: {}"+ e.getHttpBody());
+
+            //Collection<Header> httpCode = e.getHttpHeaders();
+            //Option<String> httpBody = e.getHttpBody();
+        }
+
+            capPOrderss.clear();
+            POrders capPOrders = com.sap.cds.Struct.create(POrders.class);
+
+            capPOrders.setPoid("1");
+            capPOrders.setPotype("NB");
+            capPOrders.setPogroup("001");
+            capPOrders.setPosupplier("17300001");
+            
+            capPOrderss.add(capPOrders);
+
+
+        //context.setResult(v_result.values());
+        context.setResult(capPOrderss);
+
+        //context.setCompleted();
+    }    
 
 //    @On(entity = Books_.CDS_NAME)
     @On(event = SaveBookContext.CDS_NAME)
@@ -218,11 +277,6 @@ public class CatalogServiceHandler implements EventHandler {
     @On(event = SaveBookTypesEntityProcContext.CDS_NAME)
     public void onSaveBookTypesEntityProc(SaveBookTypesEntityProcContext context) {
 
-
-//        Integer pId = 1001 ; //context.Id();
-//		String pTitle = "tttt"; //context.Title();
-//		Integer pStock = 1; //context.Stock();
-
         Collection<BookTypes> bookTypes = context.getBooks();
 
         for (BookTypes bookType : bookTypes) {
@@ -234,38 +288,8 @@ public class CatalogServiceHandler implements EventHandler {
      
         }
         context.setResult(bookTypes);
-/*
-        // Integer pId = context.
-		String pTitle = context.getInputData().getTitle();
-		Integer pStock = context.getInputData().getStock();
-System.out.println("zzzzzzzz01");
-        //Collection<BookTypes> v_result = new ArrayList<>();
-        BookTypes v_result =  BookTypes.create();
 
-		//String bookId = (String) analyzer.analyze(context.getCqn()).targetKeys().get(Books.ID);
-
-		cds.gen.catalogservice.Books books = cds.gen.catalogservice.Books.create();
-		books.setId(pId);
-        books.setTitle(pTitle);
-        books.setStock(pStock); 
-        System.out.println("zzzzzzzz02");  
-
-        v_result.setId(pId);
-        v_result.setTitle(pTitle);
-        v_result.setStock(pStock);
-        System.out.println("zzzzzzzz03");
-		Result res = db.run(Insert.into(BOOKS).entry(books));
-		cds.gen.catalogservice.Books inserted = res.single(cds.gen.catalogservice.Books.class);
-        System.out.println("zzzzzzzz04");
-        context.setResult(v_result);
-
-
-		//messages.success(MessageKeys.REVIEW_ADDED);
-
-		//context.setResult(Struct.access(inserted).as(Books.class));
-*/
-
-        }    
+    }    
 
 
 }
